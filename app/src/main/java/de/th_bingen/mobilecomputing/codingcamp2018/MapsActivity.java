@@ -17,15 +17,29 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polygon;
+import com.google.android.gms.maps.model.PolygonOptions;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
+import java.util.ArrayList;
+import java.util.List;
+
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMapClickListener
 {
 
     private static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 15123;
     private GoogleMap mMap;
     private FloatingActionButton fab;
+    private static final int DRAW_NONE = 0, DRAW_POLYGON = 1, DRAW_CIRCLE = 2, DRAW_LINE = 3;
+
+    private int draw = DRAW_NONE;
+    private List<LatLng> points = new ArrayList<>();
+    private Polygon polygon;
+    private Circle circle;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -50,7 +64,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i)
                     {
-
+                        draw = i+1;
+                        points.clear();
                     }
                 });
                 builder.show();
@@ -72,6 +87,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap)
     {
         mMap = googleMap;
+        mMap.setOnMapClickListener(this);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
         {
@@ -96,5 +112,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void initMap()
     {
         mMap.setMyLocationEnabled(true);
+    }
+
+    @Override
+    public void onMapClick(LatLng latLng)
+    {
+        if( draw != DRAW_NONE )
+        {
+            points.add(latLng);
+            draw();
+        }
+    }
+
+    private void draw()
+    {
+        switch (draw)
+        {
+            case DRAW_POLYGON:
+                if( polygon != null )
+                    polygon.remove();
+                PolygonOptions options = new PolygonOptions().add(points.toArray(new LatLng[points.size()]));
+                polygon = mMap.addPolygon(options);
+                break;
+            case DRAW_CIRCLE:
+                break;
+            case DRAW_LINE:
+                break;
+        }
     }
 }
