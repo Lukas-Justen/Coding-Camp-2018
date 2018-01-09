@@ -1,4 +1,14 @@
 <resources>
     <string name="app_name">CodingCamp2018</string>
     <string name="title_activity_maps">Map</string>
+
+    <string name="polygon">Polygon</string>
+    <string name="circle">Kreis</string>
+    <string name="line">Linie</string>
+
+    <string-array name="shapes">
+        <item>@string/polygon</item>
+        <item>@string/circle</item>
+        <item>@string/line</item>
+    </string-array>
 </resources>
