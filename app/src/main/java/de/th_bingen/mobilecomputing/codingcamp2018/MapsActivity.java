@@ -1,5 +1,10 @@
 package de.th_bingen.mobilecomputing.codingcamp2018;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
@@ -13,6 +18,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 {
 
+    private static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 15123;
     private GoogleMap mMap;
 
     @Override
@@ -41,9 +47,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    MY_PERMISSIONS_REQUEST_FINE_LOCATION);
+            return;
+        }
+        initMap();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
+    {
+        if( requestCode == MY_PERMISSIONS_REQUEST_FINE_LOCATION )
+        {
+            initMap();
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private void initMap()
+    {
+        mMap.setMyLocationEnabled(true);
     }
 }
