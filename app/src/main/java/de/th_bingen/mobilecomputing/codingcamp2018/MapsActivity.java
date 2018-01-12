@@ -15,9 +15,12 @@ import android.view.View;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
@@ -32,6 +35,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private int draw = DRAW_NONE;
     private List<LatLng> points = new ArrayList<>();
+    private Polygon polygon;
+    private Circle circle;
+    private Polyline polyline;
 
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,10 +52,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View view) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
                 builder.setItems(R.array.shapes, new DialogInterface.OnClickListener() {
-                    @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         draw = i + 1;
                         points.clear();
+                        polygon = null;
+                        circle = null;
+                        polyline = null;
                     }
                 });
                 builder.show();
@@ -81,7 +89,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setMyLocationEnabled(true);
     }
 
-    @Override
     public void onMapClick(LatLng latLng) {
         if (draw != DRAW_NONE) {
             points.add(latLng);
@@ -92,18 +99,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void draw() {
         switch (draw) {
             case DRAW_POLYGON:
+                if (polygon != null) {
+                    polygon.remove();
+                }
                 PolygonOptions polygonOptions = new PolygonOptions().add(points.toArray(new LatLng[points.size()]));
-                mMap.addPolygon(polygonOptions);
+                polygon = mMap.addPolygon(polygonOptions);
                 break;
             case DRAW_CIRCLE:
+                if (circle != null) {
+                    circle.remove();
+                }
                 CircleOptions circleOptions = new CircleOptions().center(points.get(0)).radius(5 * 1000);
-                mMap.addCircle(circleOptions);
+                circle = mMap.addCircle(circleOptions);
                 break;
             case DRAW_LINE:
+                if (polyline != null) {
+                    polyline.remove();
+                }
                 PolylineOptions polylineOptions = new PolylineOptions().add(points.toArray(new LatLng[points.size()]));
-                mMap.addPolyline(polylineOptions);
+                polyline = mMap.addPolyline(polylineOptions);
                 break;
         }
     }
+
+    
 
 }
