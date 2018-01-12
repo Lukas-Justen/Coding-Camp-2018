@@ -5,10 +5,12 @@
     <string name="polygon">Polygon</string>
     <string name="circle">Kreis</string>
     <string name="line">Linie</string>
+    <string name="tracking">Tracking</string>
 
     <string-array name="shapes">
         <item>@string/polygon</item>
         <item>@string/circle</item>
         <item>@string/line</item>
+        <item>@string/tracking</item>
     </string-array>
 </resources>

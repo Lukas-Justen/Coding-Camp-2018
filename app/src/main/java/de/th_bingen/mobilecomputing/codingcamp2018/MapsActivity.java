@@ -3,8 +3,12 @@ package de.th_bingen.mobilecomputing.codingcamp2018;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -26,12 +30,12 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMapClickListener {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMapClickListener, LocationListener {
 
     private static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 15123;
     private GoogleMap mMap;
     private FloatingActionButton fab;
-    private static final int DRAW_NONE = 0, DRAW_POLYGON = 1, DRAW_CIRCLE = 2, DRAW_LINE = 3;
+    private static final int DRAW_NONE = 0, DRAW_POLYGON = 1, DRAW_CIRCLE = 2, DRAW_LINE = 3, TRACKING = 4;
 
     private int draw = DRAW_NONE;
     private List<LatLng> points = new ArrayList<>();
@@ -75,18 +79,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     MY_PERMISSIONS_REQUEST_FINE_LOCATION);
             return;
         }
-        initMap();
-    }
+        mMap.setMyLocationEnabled(true);
 
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == MY_PERMISSIONS_REQUEST_FINE_LOCATION) {
-            initMap();
-        }
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 0, this);
     }
 
     @SuppressLint("MissingPermission")
-    private void initMap() {
-        mMap.setMyLocationEnabled(true);
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == MY_PERMISSIONS_REQUEST_FINE_LOCATION) {
+            mMap.setMyLocationEnabled(true);
+        }
     }
 
     public void onMapClick(LatLng latLng) {
@@ -119,9 +122,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 PolylineOptions polylineOptions = new PolylineOptions().add(points.toArray(new LatLng[points.size()]));
                 polyline = mMap.addPolyline(polylineOptions);
                 break;
+            case TRACKING:
+                if (polyline != null) {
+                    polyline.remove();
+                }
+                PolylineOptions trackingOptions = new PolylineOptions().add(points.toArray(new LatLng[points.size()]));
+                polyline = mMap.addPolyline(trackingOptions);
+                break;
         }
     }
 
-    
+    public void onLocationChanged(Location location) {
+        if (draw == TRACKING) {
+            points.add(new LatLng(location.getLatitude(), location.getLongitude()));
+            draw();
+        }
+    }
+
+
+    public void onStatusChanged(String s, int i, Bundle bundle) {
+
+    }
+
+    public void onProviderEnabled(String s) {
+
+    }
+
+    public void onProviderDisabled(String s) {
+
+    }
 
 }
