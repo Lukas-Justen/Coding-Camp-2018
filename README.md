@@ -1,4 +1,5 @@
 # CodingCamp2018
+Dieses Repository enthält Code für das TH Bingen Coding Camp welches unter anderem im Jahr 2018 veranstaltet wurde. Bei diesem Projekt sollten Schüler Google Maps nutzen um geometrische Objekte auf einer Karte einzuzeichnen. Dadurch konnten die Schüler auch einen ersten Einblick in komplexe APIs wie Google Maps erhalten.
 
 0. Kurze Erklärung zu Android
 
